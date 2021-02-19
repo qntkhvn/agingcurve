@@ -1,7 +1,6 @@
-library(tidyverse)
-
 # Data
 library(Lahman)
+library(tidyverse)
 
 baseball <- 
   left_join(Batting, People, by = "playerID") %>% 
@@ -61,127 +60,8 @@ simdata[1:210,] %>%
   ggplot(aes(x = age, y = ops, col = factor(player))) + 
   geom_point() + geom_smooth(se = FALSE) + theme_bw()
 
-# Drop-out methods
-
-# if age = 30 and OPS < 0.2 then retire
-
-drop_end1 <- simdata %>% 
-  filter(age == 30 & ops < 0.2)
-
-drop_end2 <- simdata %>% 
-  filter(player %in% drop_end1$player) %>% 
-  filter(age >= 30)
-
-drop_end <- anti_join(simdata, drop_end2) %>% mutate(type = "End_of_career")
-
-# drop out at the start of career
-# age 25 ops < 0.3, not good enough to remain in the league (go overseas etc.)
-
-drop_start1 <- simdata %>% 
-  filter(age == 25 & ops < 0.2)
-
-drop_start2 <- simdata %>% 
-  filter(player %in% drop_start1$player) %>% 
-  filter(age > 25)
-
-drop_start <- anti_join(simdata, drop_start2) %>% mutate(type = "Start_of_career_out")
-
-# Start: continue to be in minor league
-
-dropstart1 <- simdata %>% 
-  filter(age == 23 & ops < 0.2)
-
-dropstart2 <- simdata %>% 
-  filter(player %in% dropstart1$player) %>% 
-  filter(age <= 23)
-
-dropstart <- anti_join(simdata, dropstart2) %>% mutate(type = "Start_of_career_minor")
-
-# at age 30, 25% retire
-players <- unique(simdata$player)
-x <- sample(players, length(players)/4)
-
-dropAge30 <- simdata %>% 
-  filter(player %in% x) %>% 
-  filter(age >= 30)
-
-# age age 35, 10% more retire (35% total)
-# y <- sample(setdiff(players, x), length(players)/10)
-# 
-# dropAge35 <- simdata %>% 
-#   filter(player %in% y) %>% 
-#   filter(age >= 35)
-# 
-# drop_30_35 <- anti_join(simdata, union(dropAge30, dropAge35)) %>% mutate(type = "Drop_ages_30_35")
-
-
-drop_30 <- anti_join(simdata, dropAge30) %>% mutate(type = "Drop_age_30")
-
-# at age 35, 50% retire
-x35 <- sample(unique(simdata$player), length(players)/2)
-
-dropAge35 <- simdata %>% 
-  filter(player %in% x35) %>% 
-  filter(age >= 35)
-
-drop_35 <- anti_join(simdata, dropAge35) %>% mutate(type = "Drop_age_35")
-
-
-# middle of career
-
-drop_mid <- simdata %>% 
-  filter(!(age %in% 26:33 & ops < 0.1)) %>% 
-  mutate(type = "Mid_career_injury")
-
-simdata %>% 
-  mutate(type = "Full_data") %>% 
-  full_join(drop_end) %>% 
-  full_join(drop_start) %>% 
-  full_join(dropstart) %>% 
-  full_join(drop_30) %>% 
-  full_join(drop_35) %>% 
-  full_join(drop_mid) %>% 
-  group_by(type, age) %>% 
-  summarise(meanOps = mean(ops)) %>% 
-  ggplot(aes(x = age, y = meanOps, col = type)) +
-  geom_point() + geom_smooth(method = "loess") + 
-  theme_bw()
-
-#geom_point() + geom_smooth(method = "lm", formula = y ~ poly(x, 3)) 
-
-# full_df <- simdata %>% 
-#   mutate(type = "Full_data") %>% 
-#   full_join(drop_end) %>% 
-#   full_join(drop_start) %>% 
-#   full_join(dropstart) %>% 
-#   full_join(drop_30) %>% 
-#   full_join(drop_35) %>% 
-#   full_join(drop_mid)
-
-
-library(micemd)
-?micemd
-
-
-
-dropstart1_NA <- simdata %>% 
-  filter(age <= 23 & ops < 0.2) %>% 
-  mutate(ops = NA)
-
-dropstart1_remained <- simdata %>% 
-  filter(!(id %in% dropstart1_NA$id))
-
-dropstart1_full_NA <- dropstart1_NA %>% 
-  full_join(dropstart1_remained) %>% 
-  arrange(player, age)
-
-
-
-dropstart1_full_NA %>% 
-  filter(player %in% c("player1", "player2", "player3", "player6", "player7")) %>% 
-  ggplot(aes(x = age, y = ops, col = player)) + 
-  geom_point() + theme_bw() + geom_smooth()
-
+#_________________________________
+### Drop-out rules and Imputations
 
 library(mice)
 
@@ -216,20 +96,17 @@ imp1 <- mice(out25, pred = pred, meth = meth, print = FALSE)
 densityplot(imp1, ~ops)
 densityplot(imp1, ~ ops | .imp)
 
-imp_data_start1 <- complete(imp1) 
+imp_data_start1 <- complete(imp1) # negative OPS, so use a transformation
 
-# %>% mutate(ops = ifelse(ops < 0, 0, ops))
-
-# plot observed and imputed data
-plot(density(simdata$ops), xlim = c(-1, 2))
-lines(density(imp_data_start1$ops), col = "red", lwd = 2)
-
-plot(imp)
-# run additional iterations. Convergence is not apparent from this plot
-
-# imp2 <- mice.mids(imp, maxit = 10, print = FALSE)
-# plot(imp2) # convergence is more convincing
-
+# # plot observed and imputed data
+# plot(density(simdata$ops), xlim = c(-1, 2))
+# lines(density(imp_data_start1$ops), col = "red", lwd = 2)
+# 
+# plot(imp)
+# # run additional iterations.
+# 
+# # imp2 <- mice.mids(imp, maxit = 10, print = FALSE)
+# # plot(imp2) # convergence is more convincing
 
 
 # Try with arcsin OPS
@@ -249,8 +126,6 @@ imp2 <- mice(out25_new, pred = pred, meth = meth, print = FALSE)
 densityplot(imp2, ~arcsinops)
 densityplot(imp2, ~ arcsinops | .imp)
 
-
-
 imp_data_start2 <- complete(imp2) %>% mutate(ops = maxOPS*sin(arcsinops)^2)
 
 
@@ -260,10 +135,10 @@ for (i in 1:5){
   mylist[[i]]$imp <- i
 }
 
-dat <- do.call(rbind, mylist)
+imp_all <- do.call(rbind, mylist)
 
 
-dat %>% 
+imp_all %>% 
   mutate(ops = maxOPS*sin(arcsinops)^2) %>% 
   filter(player %in% c(1,3)) %>% 
   ggplot(aes(x = age, y = ops, col = factor(player))) +
@@ -390,13 +265,6 @@ imp_data_outback2 <- complete(imp6) %>% mutate(ops = maxOPS*sin(arcsinops)^2)
 plot(density(simdata$ops), xlim = c(-1, 2))
 lines(density(imp_data_outback2$ops), col = "red", lwd = 2)
 
-
-
-
-
-
-
-
 simdata %>% 
   select(player, age, ops) %>% 
   mutate(type = "og") %>% 
@@ -408,3 +276,125 @@ simdata %>%
   ggplot(aes(x = age, y = meanOps, col = type)) +
   geom_point() + geom_smooth() + 
   theme_bw()
+
+
+## Some scratch work
+
+# Drop-out methods
+
+# if age = 30 and OPS < 0.2 then retire
+
+drop_end1 <- simdata %>% 
+  filter(age == 30 & ops < 0.2)
+
+drop_end2 <- simdata %>% 
+  filter(player %in% drop_end1$player) %>% 
+  filter(age >= 30)
+
+drop_end <- anti_join(simdata, drop_end2) %>% mutate(type = "End_of_career")
+
+# drop out at the start of career
+# age 25 ops < 0.3, not good enough to remain in the league (go overseas etc.)
+
+drop_start1 <- simdata %>% 
+  filter(age == 25 & ops < 0.2)
+
+drop_start2 <- simdata %>% 
+  filter(player %in% drop_start1$player) %>% 
+  filter(age > 25)
+
+drop_start <- anti_join(simdata, drop_start2) %>% mutate(type = "Start_of_career_out")
+
+# Start: continue to be in minor league
+
+dropstart1 <- simdata %>% 
+  filter(age == 23 & ops < 0.2)
+
+dropstart2 <- simdata %>% 
+  filter(player %in% dropstart1$player) %>% 
+  filter(age <= 23)
+
+dropstart <- anti_join(simdata, dropstart2) %>% mutate(type = "Start_of_career_minor")
+
+# at age 30, 25% retire
+players <- unique(simdata$player)
+x <- sample(players, length(players)/4)
+
+dropAge30 <- simdata %>% 
+  filter(player %in% x) %>% 
+  filter(age >= 30)
+
+# age age 35, 10% more retire (35% total)
+# y <- sample(setdiff(players, x), length(players)/10)
+# 
+# dropAge35 <- simdata %>% 
+#   filter(player %in% y) %>% 
+#   filter(age >= 35)
+# 
+# drop_30_35 <- anti_join(simdata, union(dropAge30, dropAge35)) %>% mutate(type = "Drop_ages_30_35")
+
+
+drop_30 <- anti_join(simdata, dropAge30) %>% mutate(type = "Drop_age_30")
+
+# at age 35, 50% retire
+x35 <- sample(unique(simdata$player), length(players)/2)
+
+dropAge35 <- simdata %>% 
+  filter(player %in% x35) %>% 
+  filter(age >= 35)
+
+drop_35 <- anti_join(simdata, dropAge35) %>% mutate(type = "Drop_age_35")
+
+
+# middle of career
+
+drop_mid <- simdata %>% 
+  filter(!(age %in% 26:33 & ops < 0.1)) %>% 
+  mutate(type = "Mid_career_injury")
+
+simdata %>% 
+  mutate(type = "Full_data") %>% 
+  full_join(drop_end) %>% 
+  full_join(drop_start) %>% 
+  full_join(dropstart) %>% 
+  full_join(drop_30) %>% 
+  full_join(drop_35) %>% 
+  full_join(drop_mid) %>% 
+  group_by(type, age) %>% 
+  summarise(meanOps = mean(ops)) %>% 
+  ggplot(aes(x = age, y = meanOps, col = type)) +
+  geom_point() + geom_smooth(method = "loess") + 
+  theme_bw()
+
+#geom_point() + geom_smooth(method = "lm", formula = y ~ poly(x, 3)) 
+
+# full_df <- simdata %>% 
+#   mutate(type = "Full_data") %>% 
+#   full_join(drop_end) %>% 
+#   full_join(drop_start) %>% 
+#   full_join(dropstart) %>% 
+#   full_join(drop_30) %>% 
+#   full_join(drop_35) %>% 
+#   full_join(drop_mid)
+
+
+library(micemd)
+?micemd
+
+
+
+dropstart1_NA <- simdata %>% 
+  filter(age <= 23 & ops < 0.2) %>% 
+  mutate(ops = NA)
+
+dropstart1_remained <- simdata %>% 
+  filter(!(id %in% dropstart1_NA$id))
+
+dropstart1_full_NA <- dropstart1_NA %>% 
+  full_join(dropstart1_remained) %>% 
+  arrange(player, age)
+
+dropstart1_full_NA %>% 
+  filter(player %in% c("player1", "player2", "player3", "player6", "player7")) %>% 
+  ggplot(aes(x = age, y = ops, col = player)) + 
+  geom_point() + theme_bw() + geom_smooth()
