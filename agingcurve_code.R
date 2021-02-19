@@ -19,7 +19,7 @@ scaled <- baseball %>%
   mutate(scaledOPS = OPS/max(OPS),
          arcsin = asin(sqrt(scaledOPS)))
 
-maxOPS <- max(scaled$OPS)
+maxOPS <- max(scaled$OPS) # max ops (B.Bonds)
 
 # Model
 
@@ -38,8 +38,8 @@ sim <- function(){
   age <- data.frame(age = 20:40)
   pred <- predict(mixed_mod, age, re.form = NA)
   
-  shift <- rnorm(1, 0, randeff[1,5]) # new player- strength, shift
-  eps <- rnorm(nrow(age), 0, randeff[2,5]) # variability across szn
+  shift <- rnorm(1, 0, randeff[1,5])
+  eps <- rnorm(nrow(age), 0, randeff[2,5]) # variability across seasons
   
   career <- pred + shift + eps
   return(career)
@@ -60,7 +60,7 @@ simdata[1:210,] %>%
   ggplot(aes(x = age, y = ops, col = factor(player))) + 
   geom_point() + geom_smooth(se = FALSE) + theme_bw()
 
-#_________________________________
+#_____________________________________________________________________
 ### Drop-out rules and Imputations
 
 library(mice)
