@@ -333,7 +333,6 @@ dropAge30 <- simdata %>%
 # 
 # drop_30_35 <- anti_join(simdata, union(dropAge30, dropAge35)) %>% mutate(type = "Drop_ages_30_35")
 
-
 drop_30 <- anti_join(simdata, dropAge30) %>% mutate(type = "Drop_age_30")
 
 # at age 35, 50% retire
