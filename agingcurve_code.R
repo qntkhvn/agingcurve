@@ -380,8 +380,6 @@ simdata %>%
 library(micemd)
 ?micemd
 
-
-
 dropstart1_NA <- simdata %>% 
   filter(age <= 23 & ops < 0.2) %>% 
   mutate(ops = NA)
