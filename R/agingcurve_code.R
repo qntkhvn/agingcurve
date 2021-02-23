@@ -13,12 +13,6 @@ baseball <-
 
 # Wrangling: scaling
 scaled <- baseball %>% 
-  filter(!is.na(OPS)) %>% 
-         OPS = OBP + SLG) %>% 
-  filter(!is.na(OPS))
-
-# Wrangling: scaling
-scaled <- baseball %>% 
   filter(OPS < 1.422) %>% 
   select(playerID, age, OPS) %>% 
   mutate(scaledOPS = OPS/max(OPS),
