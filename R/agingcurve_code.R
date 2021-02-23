@@ -9,19 +9,16 @@ baseball <-
   filter(age %in% 20:40) %>% 
   mutate(OBP = (H + BB + HBP) / (AB + BB + HBP + SF),
          SLG =  (H + X2B + 2*X3B + 3*HR) / AB,
-<<<<<<< HEAD
          OPS = OBP + SLG)
 
 # Wrangling: scaling
 scaled <- baseball %>% 
   filter(!is.na(OPS)) %>% 
-=======
          OPS = OBP + SLG) %>% 
   filter(!is.na(OPS))
 
 # Wrangling: scaling
 scaled <- baseball %>% 
->>>>>>> 9b79b9f53d4068c5a3f1c700aeda9939df1154d6
   filter(OPS < 1.422) %>% 
   select(playerID, age, OPS) %>% 
   mutate(scaledOPS = OPS/max(OPS),
