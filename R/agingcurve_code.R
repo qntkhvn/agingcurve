@@ -9,7 +9,8 @@ baseball <-
   filter(age %in% 20:40) %>% 
   mutate(OBP = (H + BB + HBP) / (AB + BB + HBP + SF),
          SLG =  (H + X2B + 2*X3B + 3*HR) / AB,
-         OPS = OBP + SLG)
+         OPS = OBP + SLG) %>% 
+  filter(!is.na(OPS))
 
 # Wrangling: scaling
 scaled <- baseball %>% 
