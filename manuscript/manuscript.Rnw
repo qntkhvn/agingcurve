@@ -13,6 +13,24 @@ Lit review
 -Describe what we are doing.  
 - Trying to estimate an aging curve using imputation methods to impute the missing years of players' careers due to retirement, drop out, etc.  
 
+\subsection{discrete}
+Ideas: 
+- Raw aging curve (OPS as measure of performance) imputed with 2L.norm (and covariates)
+- Delta method of the aging curve (OPS as measure of performance) imputed with 2L.norm (and covariates)
+- Aging curves for different aspects of performance (i.e. Power hitting, OBP, stolen bases?)
+
+- Think about HOW we are actually doing these imputations.  We might need to write our own code to do something more complex than MICE???
+- MICE MD?  mice.impute.2l.2stage.pmm?  mice.impute.2l.2stage.norm?
+
+\subsection{continuous}
+- A different idea is to take the discrete performance by age and try to fit a continuous curve (Fourier approx or loess or splines or etc.) to that data and then impute that function.  
+- Do the ``delta method" to the continuous fitted curve.  
+
+
+
+- clustering based on career types.  
+
+
 \section{Results}
 \subsection{Simulation results}
 simulate a "real" curve.  We simulate dropout and then check how different types of dropout 
@@ -27,6 +45,8 @@ Golf
 Running
 Swimming
 Softball
+
+CLustering based on career types?
 
 
 \section{Conclusions}
