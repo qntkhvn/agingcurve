@@ -1,0 +1,43 @@
+\documentclass{article}
+
+\authors{}
+
+
+\begin{document}
+
+\section{Introduction}
+Lit review
+
+
+\section{Methods}
+-Describe what we are doing.  
+- Trying to estimate an aging curve using imputation methods to impute the missing years of players' careers due to retirement, drop out, etc.  
+
+\section{Results}
+\subsection{Simulation results}
+simulate a "real" curve.  We simulate dropout and then check how different types of dropout 
+
+\subsection{Real data example}
+Baseball: Different positions? 
+
+Other sports?  
+Tennis 
+Chess 
+Golf
+Running
+Swimming
+Softball
+
+
+\section{Conclusions}
+The old way of doing aging curves did not account for dropout.  We believe our estimate is better.  And here are the ways that it is different.  
+
+
+
+
+
+
+
+
+
+\end{document}
