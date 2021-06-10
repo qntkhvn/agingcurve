@@ -1,11 +1,31 @@
 \documentclass{article}
+\usepackage{natbib}      % cross referencing bibliography entries
+\usepackage{amsmath, amsthm, amsfonts}
+\usepackage{graphicx}    % importing graphics into figures
+\usepackage{multirow}    % tables with multiple rows
+\usepackage{slashbox}    % tables with slash
+\usepackage{rotating}    % for vertical words in table
+\usepackage{color}       % for textcolor.. (temporary use before submission)
+\usepackage{bm}
+\usepackage[section]{placeins} % ensure floats do not go into the next section.
 
 
 \begin{document}
 
 \section{Introduction}
-Lit review
+\cite{Albert1992}: Estimates home run rates for 12 players.  Modeled the aging curves as a quadratic function of the number of seasons that a player had played.  
 
+
+\cite{James1982}: Baseball abstract.  We should get a copy of this.  
+
+\cite{BerryEtAl1999}: Bridging Different Eras in Sports.  Use a nonparametric method for estimating aging curves.  
+
+\cite{Albert1999}:  This is a comment about \cite{BerryEtAl1999}, where Albert again mentions the quadratic aging curve. I think albert like the inerpretating of a quadratic better than the nonparametric curve.   
+
+\cite{Fair2007}: Looks at effects of aging in swimming, running, and chess. 
+Mentions Moore1975 (lett's try to get thius.  )
+
+\cite{Fair2008}: JQAS article about aging in baseball.  
 
 \section{Methods}
 - Describe what we are doing.  
@@ -51,5 +71,9 @@ CLustering based on career types?
 \section{Conclusions}
 
 The old way of doing aging curves did not account for dropout.  We believe our estimate is better.  And here are the ways that it is different.  
+\cite{HeEtAl2011}
+
+\bibliography{aging}
+\bibliographystyle{chicago}
 
 \end{document}
