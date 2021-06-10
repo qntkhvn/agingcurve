@@ -1,0 +1,128 @@
+\documentclass{article}\usepackage[]{graphicx}\usepackage[]{color}
+% maxwidth is the original width if it is less than linewidth
+% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\usepackage{natbib}      % cross referencing bibliography entries
+\usepackage{amsmath, amsthm, amsfonts}
+\usepackage{graphicx}    % importing graphics into figures
+\usepackage{multirow}    % tables with multiple rows
+\usepackage{slashbox}    % tables with slash
+\usepackage{rotating}    % for vertical words in table
+\usepackage{color}       % for textcolor.. (temporary use before submission)
+\usepackage{bm}
+\usepackage[section]{placeins} % ensure floats do not go into the next section.
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+\section{Introduction}
+\cite{Albert1992}: Estimates home run rates for 12 players.  Modeled the aging curves as a quadratic function of the number of seasons that a player had played.  
+
+
+\cite{James1982}: Baseball abstract.  We should get a copy of this.  
+
+\cite{BerryEtAl1999}: Bridging Different Eras in Sports.  Use a nonparametric method for estimating aging curves.  
+
+\cite{Albert1999}:  This is a comment about \cite{BerryEtAl1999}, where Albert again mentions the quadratic aging curve. I think albert like the inerpretating of a quadratic better than the nonparametric curve.   
+
+\cite{Fair2007}: Looks at effects of aging in swimming, running, and chess. 
+Mentions Moore1975 (lett's try to get thius.  )
+
+\cite{Fair2008}: JQAS article about aging in baseball.  
+
+\section{Methods}
+- Describe what we are doing.  
+- Trying to estimate an aging curve using imputation methods to impute the missing years of players' careers due to retirement, drop out, etc.  
+
+\subsection{discrete}
+Ideas: 
+- Raw aging curve (OPS as measure of performance) imputed with 2L.norm (and covariates)
+- Delta method of the aging curve (OPS as measure of performance) imputed with 2L.norm (and covariates)
+- Aging curves for different aspects of performance (i.e. Power hitting, OBP, stolen bases?)
+
+- Think about HOW we are actually doing these imputations.  We might need to write our own code to do something more complex than MICE???
+- MICE MD?  mice.impute.2l.2stage.pmm?  mice.impute.2l.2stage.norm?
+
+\subsection{continuous}
+- A different idea is to take the discrete performance by age and try to fit a continuous curve (Fourier approx or loess or splines or etc.) to that data and then impute that function.  
+- Do the ``delta method" to the continuous fitted curve.  
+
+
+
+- clustering based on career types.  
+
+
+\section{Results}
+
+\subsection{Simulation results}
+simulate a "real" curve.  We simulate dropout and then check how different types of dropout 
+
+\subsection{Real data example}
+Baseball: Different positions? 
+
+Other sports?  
+Tennis 
+Chess 
+Golf
+Running
+Swimming
+Softball
+
+CLustering based on career types?
+
+
+\section{Conclusions}
+
+The old way of doing aging curves did not account for dropout.  We believe our estimate is better.  And here are the ways that it is different.  
+\cite{HeEtAl2011}
+
+\bibliography{aging}
+\bibliographystyle{chicago}
+
+\end{document}
