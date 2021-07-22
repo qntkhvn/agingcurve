@@ -85,13 +85,13 @@ complete(imp, "long", include = TRUE) %>%
   group_by(.imp, age) %>%
   summarise(meanOps = mean(OPS, na.rm = TRUE)) %>% 
   ggplot(aes(x = age, y = meanOps, color = factor(.imp))) +
-  geom_point() + geom_smooth(span = 1) +
+  geom_point() + geom_smooth() +
   ggtitle("Real data, imputed with no covariates")
 
 ##########################
 
 # Covariates
-# BA, PA, HR
+# HR rate
 
 # select(pnum, age, arcsinOPS, BA)
 df2 <- joined %>% 
