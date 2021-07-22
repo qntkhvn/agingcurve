@@ -27,15 +27,58 @@ imp2 <- mice(out25_new, predictorMatrix = pred, method = "2l.norm", seed = 123)
 # lines(density(out25$ops[!is.na(out25$ops)]), col = "red", lwd = 2)
 # lines(density(imp_data_start2$ops), col = "red", lwd = 2)
 
-complete(imp2, "long", include = TRUE) %>% 
+p <- complete(imp2, "long", include = TRUE) %>% 
   mutate(ops = maxOPS*(sin(arcsinops))^2,
          type = paste("Imputation", .imp)) %>% 
   select(player, age, ops, type) %>% 
   full_join(simdata %>% select(player, age, ops) %>% mutate(type = "Original")) %>%
   group_by(type, age) %>%
-  summarise(meanOps = mean(ops, na.rm = TRUE)) %>% 
-  ggplot(aes(x = age, y = meanOps, color = type)) +
-  geom_point() + geom_smooth()
+  summarise(ops = mean(ops, na.rm = TRUE)) %>% 
+  ggplot(aes(x = age, y = ops, color = type)) +
+  geom_point() + 
+  geom_smooth(se = FALSE)
+  
+
+
+# rubin's combining rules
+
+
+p +
+  geom_point(data = rubin_df, aes(x = age, y = ops)) +
+  geom_smooth(data = rubin_df, aes(x = age, y = ops), se = FALSE) +
+  geom_errorbar(data = rubin_df, aes(ymin = ops_lower, ymax = ops_upper))
+
+m <- 5
+rubin_df <- complete(imp2, "long") %>% 
+  group_by(.imp, age) %>%
+  summarize(mean_arcsin = mean(arcsinops),
+            sd_arcsin = sd(arcsinops),
+            n = n(),
+            se = sd_arcsin/sqrt(n)) %>% 
+  ungroup() %>% 
+  group_by(age) %>% 
+  summarize(avg = mean(mean_arcsin),
+            vw = sum(se)/m, # Within imputation variance
+            vb = sum((mean_arcsin - avg)^2)/(m-1), # Between imputation variance
+            vt = vw + vb + vb/m, # total variablitiy
+            se_pooled = sqrt(vt), # se pooled
+            lambda = (vb + vb/m)/vt,
+            riv = (vb + vb/m)/vw,
+            df_old = (m-1)/lambda^2,
+            upper = avg + qt(0.975, df_old)*se_pooled,
+            lower = avg - qt(0.975, df_old)*se_pooled) %>% 
+  transmute(age,
+            ops = maxOPS*(avg)^2,
+            ops_upper = maxOPS*(upper)^2,
+            ops_lower = maxOPS*(lower)^2) %>% 
+  mutate(type = "combined")
+
+rubin_df %>% 
+  ggplot(aes(x = age, y = ops)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = ops_lower, ymax = ops_upper)) +
+  ylim(c(0, 1))
+
 
 
 

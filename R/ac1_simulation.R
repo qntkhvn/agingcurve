@@ -41,17 +41,17 @@ sim <- function() {
 }
 
 mylist <- c()
+set.seed(1234)
 for (i in 1:1000) {
-  mylist[[i]] <- data.frame(player = i,
-                            arcsin = sim(),
-                            age = 20:40)
+  mylist[[i]] <- tibble(player = i,
+                        arcsin = sim(),
+                        age = 20:40)
 }
 
-simdata <- do.call(rbind, mylist) %>%
+simdata <- bind_rows(mylist) %>%
   mutate(ops = maxOPS * sin(arcsin) ^ 2)
 
 simdata[1:210, ] %>%
   ggplot(aes(x = age, y = ops, col = factor(player))) +
   geom_point() +
   geom_smooth(se = FALSE)
-
